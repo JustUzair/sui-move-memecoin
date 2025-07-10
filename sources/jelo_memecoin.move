@@ -20,7 +20,7 @@ const ECapabilityMismatch: u64 = 7;
 const TOTAL_SUPPLY: u64 = 1_000_000_000_000_000_000; // 1e9 JELO Tokens
 
 const COMMUNITY_SUPPLY: u64 = 700_000_000_000_000_000;
-const INITIAL_SUPPLY: u64 = 100_000_000_000_000_000; // 1e9 JELO Tokens (Initial Community Supply)
+// const INITIAL_SUPPLY: u64 = 100_000_000_000_000_000; // 1e9 JELO Tokens (Initial Community Supply)
 const CEX_SUPPLY: u64 = 200_000_000_000_000_000;
 const OPERATIONS_SUPPLY: u64 = 100_000_000_000_000_000;
 
@@ -31,6 +31,11 @@ public struct CoinCreated has copy, drop {
     symbol: String,
 }
 
+public struct CommunityMinted has copy, drop {
+    message: String,
+    recipient: address,
+    amount: u64,
+}
 public struct OpMinted has copy, drop {
     message: String,
     operator: address,
@@ -116,6 +121,11 @@ fun init(one_time_witness: JELO, ctx: &mut TxContext) {
         cex_op_cap: table::new(ctx),
         cex_op_minted: 0,
     };
+    event::emit(CommunityMinted {
+        message: b"Community Mint to Admin Successful".to_string(),
+        recipient: ctx.sender(),
+        amount: COMMUNITY_SUPPLY,
+    });
     mint(&mut treasury, COMMUNITY_SUPPLY, ctx.sender(), ctx);
 
     transfer::public_freeze_object(metadata);
